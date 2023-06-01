@@ -1,0 +1,233 @@
+A) Write a Swift program to change the first and last character of a given string.
+[10]
+
+SOLUTION:
+
+func changeFirstAndLastCharacter(_ input: String) -> String {
+    var modifiedString = input
+   
+    if let firstCharacter = modifiedString.first,
+        let lastCharacter = modifiedString.last {
+        modifiedString.removeFirst()
+        modifiedString.removeLast()
+        modifiedString.insert(lastCharacter, at: modifiedString.startIndex)
+        modifiedString.append(firstCharacter)
+    }
+   
+    return modifiedString
+}
+
+// Example usage
+let inputString = "Hello"
+let modifiedString = changeFirstAndLastCharacter(inputString)
+print(modifiedString) // Output: oellH
+
+B) By using Spinner, Buttons. Write a Android program to draw following GUI.
+[20]
+
+SOLUTION:
+
+activity_main.xml
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingTop="16dp"
+    android:paddingRight="16dp"
+    android:paddingBottom="16dp"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select a color:"
+        android:textSize="18sp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp" />
+
+    <Spinner
+        android:id="@+id/colorSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:spinnerMode="dropdown" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Submit"
+        android:layout_below="@id/colorSpinner"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/resultTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+</RelativeLayout>
+
+Mainactivity.java
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.Spinner;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private Spinner colorSpinner;
+    private Button button;
+    private TextView resultTextView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        colorSpinner = findViewById(R.id.colorSpinner);
+        button = findViewById(R.id.button);
+        resultTextView = findViewById(R.id.resultTextView);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String selectedColor = colorSpinner.getSelectedItem().toString();
+                resultTextView.setText("Selected color: " + selectedColor);
+            }
+        });
+    }
+}
+
+
+Q.2 A) Write a C program to create a file with hole in it.
+
+SOLUTION:
+
+#include <fcntl.h>
+#include<stdio.h>
+#include<stdlib.h>
+
+char buf1[] = "welcome";
+char buf2[] = "Computer science";
+
+int main(void)
+{
+int fd;
+if ((fd = creat("file_with_hole.txt",0777 )) < 0)
+printf("creat error");
+
+if (write(fd, buf1, 7) != 7)
+printf("buf1 write error");
+
+lseek(fd,100,SEEK_CUR);
+
+if (write(fd, buf2, 16) != 16)
+printf("buf2 write error");
+exit(0);
+}
+
+B) Write a C program which display the information of a given file similar to given by the unix /linux
+command on current directory (l.e File Access permission, file name, file type, User id, group id, file
+size, file access and modified time and so on)
+ls –l <filename>
+DO NOT simply exec ls -l <filename> or system command from the program.
+
+SOLUTION:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <pwd.h>
+#include <grp.h>
+#include <time.h>
+
+void print_file_info(const char* filename) {
+    struct stat file_info;
+    if (stat(filename, &file_info) == -1) {
+        perror("stat");
+        exit(EXIT_FAILURE);
+    }
+
+    // File type
+    printf("File type: ");
+    if (S_ISREG(file_info.st_mode))
+        printf("Regular file\n");
+    else if (S_ISDIR(file_info.st_mode))
+        printf("Directory\n");
+    else if (S_ISCHR(file_info.st_mode))
+        printf("Character device\n");
+    else if (S_ISBLK(file_info.st_mode))
+        printf("Block device\n");
+    else if (S_ISFIFO(file_info.st_mode))
+        printf("FIFO or pipe\n");
+    else if (S_ISLNK(file_info.st_mode))
+        printf("Symbolic link\n");
+    else if (S_ISSOCK(file_info.st_mode))
+        printf("Socket\n");
+    else
+        printf("Unknown\n");
+
+    // File permissions
+    printf("File access permissions: ");
+    printf((file_info.st_mode & S_IRUSR) ? "r" : "-");
+    printf((file_info.st_mode & S_IWUSR) ? "w" : "-");
+    printf((file_info.st_mode & S_IXUSR) ? "x" : "-");
+    printf((file_info.st_mode & S_IRGRP) ? "r" : "-");
+    printf((file_info.st_mode & S_IWGRP) ? "w" : "-");
+    printf((file_info.st_mode & S_IXGRP) ? "x" : "-");
+    printf((file_info.st_mode & S_IROTH) ? "r" : "-");
+    printf((file_info.st_mode & S_IWOTH) ? "w" : "-");
+    printf((file_info.st_mode & S_IXOTH) ? "x" : "-");
+    printf("\n");
+
+    // File name
+    printf("File name: %s\n", filename);
+
+    // User ID and group ID
+    struct passwd* user_info = getpwuid(file_info.st_uid);
+    if (user_info != NULL)
+        printf("User ID: %d (%s)\n", file_info.st_uid, user_info->pw_name);
+    else
+        printf("User ID: %d\n", file_info.st_uid);
+
+    struct group* group_info = getgrgid(file_info.st_gid);
+    if (group_info != NULL)
+        printf("Group ID: %d (%s)\n", file_info.st_gid, group_info->gr_name);
+    else
+        printf("Group ID: %d\n", file_info.st_gid);
+
+    // File size
+    printf("File size: %lld bytes\n", (long long)file_info.st_size);
+
+    // File access and modified time
+    printf("Last access time: %s", ctime(&file_info.st_atime));
+    printf("Last modified time: %s", ctime(&file_info.st_mtime));
+}
+
+int main(int argc, char* argv[]) {
+    if (argc < 2) {
+        printf("Usage: %s <filename>\n", argv[0]);
+        return 1;
+    }
+
+    char* filename = argv[1];
+    print_file_info(filename);
+
+    return 0;
+}

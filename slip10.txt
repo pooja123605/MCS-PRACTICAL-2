@@ -1,0 +1,357 @@
+A) Create an Android Application to display satellite view of current location using Google Map.
+
+SOLUTION:
+
+
+implementation 'com.google.android.gms:play-services-maps:17.0.0'
+
+AndroidMenifest.xml
+
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+Activity_main.xml
+
+<com.google.android.gms.maps.MapView
+    android:id="@+id/mapView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />
+
+Mainactivity.java
+
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+OnMapReadyCallback interface
+
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    private MapView mapView;
+    private GoogleMap googleMap;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+       
+        // Initialize the MapView
+        mapView = findViewById(R.id.mapView);
+        mapView.onCreate(savedInstanceState);
+        mapView.getMapAsync(this);
+    }
+   
+    @Override
+    public void onMapReady(GoogleMap map) {
+        googleMap = map;
+
+        // Check for location permission
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // Enable location tracking
+            googleMap.setMyLocationEnabled(true);
+        } else {
+            // Request location permission
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    LOCATION_PERMISSION_REQUEST_CODE);
+        }
+
+        // Set map style (optional)
+        googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style));
+
+        // Move the camera to the current location
+        LatLng currentLocation = new LatLng(0, 0); // Replace with actual location
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15f));
+
+        // Add a marker at the current location
+        googleMap.addMarker(new MarkerOptions().position(currentLocation).title("Current Location"));
+    }
+   
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    googleMap.setMyLocationEnabled(true);
+                }
+            } else {
+                Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+   
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mapView.onResume();
+    }
+   
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mapView.onPause();
+    }
+   
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mapView.onDestroy();
+    }
+   
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mapView.onLowMemory();
+    }
+}
+
+AndroidMenifest.xml
+
+<meta-data
+    android:name="com.google.android.geo.API_KEY"
+    android:value="YOUR_API_KEY" />
+
+YOUR_API_KEY
+
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+
+
+
+B) Construct an Android Application to display the images using ImageSwitcher
+
+SOLUTION:
+
+Activity.java :
+package com.example.slip10_2;
+import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageSwitcher;
+import android.widget.ImageView;
+import android.widget.ViewSwitcher;
+public class MainActivity extends AppCompatActivity {
+private ImageSwitcher imageSwitcher;
+private Button nextButton, prevButton;
+private int[] imageIds = {R.drawable.deep, R.drawable.index,
+R.drawable.nidhi};
+private int currentPosition = 0;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+imageSwitcher = findViewById(R.id.imageSwitcher);
+nextButton = findViewById(R.id.nextButton);
+prevButton = findViewById(R.id.prevButton);
+imageSwitcher.setFactory(new ViewSwitcher.ViewFactory() {
+@Override
+public View makeView() {
+ImageView imageView = new
+ImageView(getApplicationContext());
+imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+return imageView;
+}
+});
+imageSwitcher.setImageResource(imageIds[currentPosition]);
+nextButton.setOnClickListener(new View.OnClickListener() {
+@Override
+public void onClick(View view) {
+if (currentPosition < imageIds.length - 1) {
+currentPosition++;
+} else {
+currentPosition = 0;
+}
+});
+}
+imageSwitcher.setImageResource(imageIds[currentPosition]);
+prevButton.setOnClickListener(new View.OnClickListener() {
+@Override
+public void onClick(View view) {
+if (currentPosition > 0) {
+currentPosition--;
+} else {
+currentPosition = imageIds.length - 1;
+}
+});
+}
+}
+}
+imageSwitcher.setImageResource(imageIds[currentPosition]);
+Activity.xml :
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools">
+<application
+android:allowBackup="true"
+android:dataExtractionRules="@xml/data_extraction_rules"
+android:fullBackupContent="@xml/backup_rules"
+android:icon="@mipmap/ic_launcher"
+android:label="@string/app_name"
+android:supportsRtl="true"
+android:theme="@style/Theme.Slip10_2"
+tools:targetApi="31">
+<activity
+android:name=".MainActivity"
+android:exported="true">
+<intent-filter>
+<action android:name="android.intent.action.MAIN" />
+<category android:name="android.intent.category.LAUNCHER"
+/>
+</intent-filter>
+</activity>
+</application>
+</manifest>
+
+Q.2 A)Write a C program to display statistics related to memory allocation system. (Use mallinfo() system
+call).
+
+SOLUTION:
+
+#include <malloc.h>
+#include "tlpi_hdr.h"
+
+static void
+display_mallinfo(void)
+{
+struct mallinfo mi;
+
+mi = mallinfo();
+
+printf("Total non-mmapped bytes (arena):   %d\n", mi.arena);
+printf("# of free chunks (ordblks):        %d\n", mi.ordblks);
+printf("# of free fastbin blocks (smblks): %d\n", mi.smblks);
+printf("# of mapped regions (hblks):       %d\n", mi.hblks);
+printf("Bytes in mapped regions (hblkhd):  %d\n", mi.hblkhd);
+printf("Max. total allocated space (usmblks):  %d\n", mi.usmblks);
+printf("Free bytes held in fastbins (fsmblks): %d\n", mi.fsmblks);
+printf("Total allocated space (uordblks):  %d\n", mi.uordblks);
+printf("Total free space (fordblks):       %d\n", mi.fordblks);
+printf("Topmost releasable block (keepcost):   %d\n", mi.keepcost);
+}
+int main(int argc, char *argv[])
+{
+#define MAX_ALLOCS 2000000
+char *alloc[MAX_ALLOCS];
+int numBlocks, j, freeBegin, freeEnd, freeStep;
+size_t blockSize;
+
+if (argc < 3 || strcmp(argv[1], "--help") == 0)
+usageErr("%s num-blocks block-size [free-step [start-free "
+"[end-free]]]\n", argv[0]);
+
+numBlocks = atoi(argv[1]);
+blockSize = atoi(argv[2]);
+freeStep = (argc > 3) ? atoi(argv[3]) : 1;
+freeBegin = (argc > 4) ? atoi(argv[4]) : 0;
+freeEnd = (argc > 5) ? atoi(argv[5]) : numBlocks;
+
+printf("============== Before allocating blocks ==============\n");
+display_mallinfo();
+
+for (j = 0; j < numBlocks; j++) {
+if (numBlocks >= MAX_ALLOCS)
+fatal("Too many allocations");
+
+alloc[j] = malloc(blockSize);
+if (alloc[j] == NULL)
+errExit("malloc");
+}
+
+printf("\n============== After allocating blocks ==============\n");
+display_mallinfo();
+
+for (j = freeBegin; j < freeEnd; j += freeStep)
+free(alloc[j]);
+
+printf("\n============== After freeing blocks ==============\n");
+display_mallinfo();
+
+exit(EXIT_SUCCESS);
+}
+
+
+
+B) Write a C program which creates two files. The first file should have read and write
+permission to owner, group of owner and other users whereas second file has read and write
+permission to owner(use umask() function). Now turn on group-id and turn off group execute
+permission of first file. Set the read permission to all user for second file (use chmod() function).
+[20]
+
+SOLUTION:
+
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+int main() {
+    int file1, file2;
+    mode_t permissions1, permissions2;
+   
+    // Set the permissions for the first file
+    permissions1 = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
+
+    // Create the first file
+    file1 = open("file1.txt", O_CREAT, permissions1);
+   
+    if (file1 == -1) {
+        perror("Error creating file1.txt");
+        return 1;
+    }
+   
+    // Turn on setgid bit and turn off group execute permission for the first file
+    if (fchmod(file1, permissions1 | S_ISGID | S_IXGRP) == -1) {
+        perror("Error setting permissions for file1.txt");
+        close(file1);
+        return 1;
+    }
+   
+    printf("file1.txt created with owner, group, and other read/write permissions.\n");
+   
+    // Set the permissions for the second file
+    permissions2 = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+
+    // Create the second file
+    file2 = open("file2.txt", O_CREAT, permissions2);
+   
+    if (file2 == -1) {
+        perror("Error creating file2.txt");
+        close(file1);
+        return 1;
+    }
+   
+    // Set read permission for all users for the second file
+    if (chmod("file2.txt", permissions2 | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH) == -1) {
+        perror("Error setting permissions for file2.txt");
+        close(file1);
+        close(file2);
+        return 1;
+    }
+   
+    printf("file2.txt created with owner read/write permissions and read permission for all users.\n");
+   
+    close(file1);
+    close(file2);
+   
+    return 0;
+}

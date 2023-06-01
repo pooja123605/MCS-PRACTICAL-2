@@ -1,0 +1,197 @@
+Q.1
+A) Write an Android Program to Demonstrate Date Picker Dialog in Android
+[10]
+
+SOLUTION:
+
+import android.app.DatePickerDialog;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+
+public class MainActivity extends AppCompatActivity {
+
+    private TextView selectedDateTextView;
+    private Button datePickerButton;
+
+    private DatePickerDialog.OnDateSetListener dateSetListener;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        selectedDateTextView = findViewById(R.id.selected_date_textview);
+        datePickerButton = findViewById(R.id.date_picker_button);
+
+        // Set the initial text for the selected date
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        String currentDate = dateFormat.format(calendar.getTime());
+        selectedDateTextView.setText(currentDate);
+
+        // Set the click listener for the date picker button
+        datePickerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Get the current date
+                Calendar calendar = Calendar.getInstance();
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+                // Create a new DatePickerDialog instance
+                DatePickerDialog datePickerDialog = new DatePickerDialog(MainActivity.this,
+                        dateSetListener, year, month, day);
+
+                // Show the date picker dialog
+                datePickerDialog.show();
+            }
+        });
+
+        // Create the date set listener for the date picker dialog
+        dateSetListener = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                // Update the selected date text view with the selected date
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Calendar.YEAR, year);
+                calendar.set(Calendar.MONTH, monthOfYear);
+                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+                String selectedDate = dateFormat.format(calendar.getTime());
+                selectedDateTextView.setText(selectedDate);
+            }
+        };
+    }
+}
+
+B) Write a PhoneGap Application to display Digital Bio Data using HTML5.
+[20]
+SOLUTION:
+Index.html
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Digital Bio Data</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="phonegap.js"></script>
+</head>
+<body>
+    <div id="bio-data">
+        <h1>My Digital Bio Data</h1>
+        <p id="name"></p>
+        <p id="age"></p>
+        <p id="location"></p>
+    </div>
+
+    <script>
+        document.addEventListener('deviceready', onDeviceReady, false);
+
+        function onDeviceReady() {
+            // Populate the biodata
+            var biodata = {
+                name: "John Doe",
+                age: 25,
+                location: "New York"
+            };
+
+            // Update the HTML elements with biodata values
+            document.getElementById('name').innerHTML = "Name: " + biodata.name;
+            document.getElementById('age').innerHTML = "Age: " + biodata.age;
+            document.getElementById('location').innerHTML = "Location: " + biodata.location;
+        }
+    </script>
+</body>
+</html>
+
+Q.2 A) Write a C program to display the last access and modified time of a given file.
+SOLUTION:
+
+#include <time.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <stdio.h>
+
+int main()
+{
+char filename[] = "c:\\test.txt";
+char timeStr[ 100 ] = "";
+struct stat buf;
+time_t ltime;
+char datebuf [9];
+char timebuf [9];
+
+if (!stat(filename, &buf))
+{
+strftime(timeStr, 100, "%d-%m-%Y %H:%M:%S", localtime( &buf.st_mtime));
+printf("\nLast modified date and time = %s\n", timeStr);
+}
+else
+{
+printf("error getting atime\n");
+}
+_strtime(timebuf);
+_strdate(datebuf);
+printf("\nThe Current time is %s\n",timebuf);
+printf("\nThe Current Date is %s\n",datebuf);
+time(&ltime );
+printf("\nThe Current time is %s\n",ctime( &ltime ));
+printf("\Diff between current and last modified time ( in seconds ) %f\n", difftime(ltime ,buf.st_mtime ) );
+return 0;
+}
+
+B) Write a C program to implement the following unix/linux command (use fork, pipe and exec system
+call). Your program should block the signal Ctrl-C and Ctrl-\ signal during the execution.
+ls –l | wc –l
+[20]
+
+Soln:
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include<errno.h>
+#include<sys/wait.h>
+#include <unistd.h>
+int main(){
+// array of 2 size a[0] is for
+// reading and a[1] is for
+// writing over a pipe
+int a[2];
+// using pipe for inter process communication
+pipe(a);
+if(!fork())
+{
+// closing normal stdout
+close(1);
+// making stdout same as a[1]
+dup(a[1]);
+// closing reading part of pipe
+// we don't need of it at this time
+close(a[0]);
+// executing ls
+execlp("ls","ls",NULL);
+}
+else
+{
+// closing normal stdin
+close(0);
+// making stdin same as a[0]
+dup(a[0]);
+// closing writing part in parent,
+// we don't need of it at this time
+close(a[1]);
+// executing wc
+execlp("wc","wc",NULL);
+}
+}

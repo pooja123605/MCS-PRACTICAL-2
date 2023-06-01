@@ -1,0 +1,419 @@
+A) Write an Android application to accept two numbers from the user, and displays them, but reject
+input if both numbers are greater than 10 and asks for two new numbers.
+[10]
+
+SOLUTION:
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private EditText number1EditText;
+    private EditText number2EditText;
+    private TextView resultTextView;
+    private Button calculateButton;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        // Get references to the UI elements
+        number1EditText = findViewById(R.id.number1EditText);
+        number2EditText = findViewById(R.id.number2EditText);
+        resultTextView = findViewById(R.id.resultTextView);
+        calculateButton = findViewById(R.id.calculateButton);
+
+        calculateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Get the numbers entered by the user
+                int number1 = Integer.parseInt(number1EditText.getText().toString());
+                int number2 = Integer.parseInt(number2EditText.getText().toString());
+
+                // Check if both numbers are greater than 10
+                if (number1 > 10 && number2 > 10) {
+                    // Clear the input fields
+                    number1EditText.setText("");
+                    number2EditText.setText("");
+                    // Display an error message
+                    resultTextView.setText("Both numbers cannot be greater than 10. Please enter new numbers.");
+                } else {
+                    // Display the entered numbers
+                    resultTextView.setText("Number 1: " + number1 + "\nNumber 2: " + number2);
+                }
+            }
+        });
+    }
+}
+Activity_main.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/resultTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp" />
+
+    <EditText
+        android:id="@+id/number1EditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/resultTextView"
+        android:hint="Enter number 1"
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/number2EditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/number1EditText"
+        android:hint="Enter number 2"
+        android:inputType="number" />
+
+    <Button
+        android:id="@+id/calculateButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/number2EditText"
+        android:text="Calculate" />
+
+</RelativeLayout>
+
+B) Create the simple calculator shown below also perform appropriate operation
+
+SOLUTION:
+
+activity_main.xml
+
+<LinearLayout
+    ...
+    android:orientation="vertical">
+
+    <EditText
+        ...
+        android:id="@+id/editTextNumber"/>
+
+    <LinearLayout
+        ...
+        android:orientation="horizontal">
+
+        <Button
+            ...
+            android:text="1"
+            android:id="@+id/button1"/>
+
+        <Button
+            ...
+            android:text="2"
+            android:id="@+id/button2"/>
+
+        <Button
+            ...
+            android:text="3"
+            android:id="@+id/button3"/>
+
+        <Button
+            ...
+            android:text="+"
+            android:id="@+id/buttonPlus"/>
+    </LinearLayout>
+
+    <LinearLayout
+        ...
+        android:orientation="horizontal">
+
+        <Button
+            ...
+            android:text="4"
+            android:id="@+id/button4"/>
+
+        <Button
+            ...
+            android:text="5"
+            android:id="@+id/button5"/>
+
+        <Button
+            ...
+            android:text="6"
+            android:id="@+id/button6"/>
+
+        <Button
+            ...
+            android:text="-"
+            android:id="@+id/buttonMinus"/>
+    </LinearLayout>
+
+    <LinearLayout
+        ...
+        android:orientation="horizontal">
+
+        <Button
+            ...
+            android:text="7"
+            android:id="@+id/button7"/>
+
+        <Button
+            ...
+            android:text="8"
+            android:id="@+id/button8"/>
+
+        <Button
+            ...
+            android:text="9"
+            android:id="@+id/button9"/>
+
+        <Button
+            ...
+            android:text="*"
+            android:id="@+id/buttonMultiply"/>
+    </LinearLayout>
+
+    <LinearLayout
+        ...
+        android:orientation="horizontal">
+
+        <Button
+            ...
+            android:text="0"
+            android:id="@+id/button0"/>
+
+        <Button
+            ...
+            android:text="="
+            android:id="@+id/buttonEquals"/>
+
+        <Button
+            ...
+            android:text="C"
+            android:id="@+id/buttonClear"/>
+
+        <Button
+            ...
+            android:text="/"
+            android:id="@+id/buttonDivide"/>
+    </LinearLayout>
+
+</LinearLayout>
+
+Mainactivity.java
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private EditText editTextNumber;
+    private Button buttonPlus, buttonMinus, buttonMultiply, buttonDivide, buttonEquals, buttonClear;
+    private String operator = "";
+    private double firstNumber = 0;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        editTextNumber = findViewById(R.id.editTextNumber);
+        buttonPlus = findViewById(R.id.buttonPlus);
+        buttonMinus = findViewById(R.id.buttonMinus);
+        buttonMultiply = findViewById(R.id.buttonMultiply);
+        buttonDivide = findViewById(R.id.buttonDivide);
+        buttonEquals = findViewById(R.id.buttonEquals);
+        buttonClear = findViewById(R.id.buttonClear);
+
+        buttonPlus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                operator = "+";
+                firstNumber = Double.parseDouble(editTextNumber.getText().toString());
+                editTextNumber.setText("");
+            }
+        });
+
+        buttonMinus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                operator = "-";
+                firstNumber = Double.parseDouble(editTextNumber.getText().toString());
+                editTextNumber.setText("");
+            }
+        });
+
+        buttonMultiply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                operator = "*";
+                firstNumber = Double.parseDouble(editTextNumber.getText().toString());
+                editTextNumber.setText("");
+            }
+        });
+
+        buttonDivide.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                operator = "/";
+                firstNumber = Double.parseDouble(editTextNumber.getText().toString());
+                editTextNumber.setText("");
+            }
+        });
+
+        buttonEquals.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                double secondNumber = Double.parseDouble(editTextNumber.getText().toString());
+                double result = 0;
+
+                switch (operator) {
+                    case "+":
+                        result = firstNumber + secondNumber;
+                        break;
+                    case "-":
+                        result = firstNumber - secondNumber;
+                        break;
+                    case "*":
+                        result = firstNumber * secondNumber;
+                        break;
+                    case "/":
+                        result = firstNumber / secondNumber;
+                        break;
+                }
+
+                editTextNumber.setText(String.valueOf(result));
+            }
+        });
+
+        buttonClear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editTextNumber.setText("");
+                operator = "";
+                firstNumber = 0;
+            }
+        });
+    }
+}
+
+
+Q.2
+A) Write a C program that print the exit status of a terminated child process.
+SOLUTION:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+// Driver code
+int main(void)
+{
+pid_t pid = fork();
+
+if ( pid == 0 )
+    {
+       /* The pathname of the file passed to execl()
+is not defined   */
+execl("/bin/sh", "bin/sh", "-c", "./nopath", "NULL");
+    }
+
+int status;
+
+waitpid(pid, &status, 0);
+
+if ( WIFEXITED(status) )
+    {
+int exit_status = WEXITSTATUS(status);      
+printf("Exit status of the child was %d\n",
+                                     exit_status);
+    }
+return 0;
+}
+
+B) Write a C program that will read a directory containing a set of files, create a new sub directory
+called “backup” in same directory and copy all the files from directory to the new sub directory
+“backup”. You are supposed to use exec() with “cp” command. ( Create child processes that can execute
+each of the cp commands to copy the file from directory to subdirectory “backup”)
+[20]
+
+SOLUTION:
+
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <dirent.h>
+#include <stdlib.h>
+#include <string.h>
+
+void copyFile(const char* source, const char* destination) {
+    pid_t pid = fork();
+   
+    if (pid < 0) {
+        perror("Fork error");
+        exit(EXIT_FAILURE);
+    }
+    else if (pid == 0) {
+        execl("/bin/cp", "cp", source, destination, NULL);
+        perror("Exec error");
+        exit(EXIT_FAILURE);
+    }
+    else {
+        wait(NULL);
+    }
+}
+
+void backupFiles(const char* directory) {
+    DIR* dir = opendir(directory);
+    if (dir == NULL) {
+        perror("Directory open error");
+        exit(EXIT_FAILURE);
+    }
+   
+    // Create "backup" subdirectory
+    char backupDir[256];
+    snprintf(backupDir, sizeof(backupDir), "%s/backup", directory);
+    int status = mkdir(backupDir, 0700);
+    if (status != 0) {
+        perror("Backup directory creation error");
+        exit(EXIT_FAILURE);
+    }
+   
+    struct dirent* entry;
+    while ((entry = readdir(dir)) != NULL) {
+        if (entry->d_type == DT_REG) {  // Only process regular files
+            // Get file paths
+            char source[256];
+            snprintf(source, sizeof(source), "%s/%s", directory, entry->d_name);
+           
+            char destination[256];
+            snprintf(destination, sizeof(destination), "%s/%s/%s", directory, "backup", entry->d_name);
+           
+            copyFile(source, destination);
+        }
+    }
+   
+    closedir(dir);
+}
+
+int main() {
+    const char* directory = "/path/to/directory";  // Replace with the actual directory path
+   
+    backupFiles(directory);
+   
+    return 0;
+}

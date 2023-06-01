@@ -1,0 +1,369 @@
+A) Write an Android Program to demonstrate Activity life Cycle
+
+
+SOLUTION:
+
+MainActivity.java :
+
+package com.example.activity_life;
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.os.Bundle;
+import android.widget.Toast;
+@SuppressLint("NewApi")
+public class MainActivity extends Activity {
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+notify("onCreate");
+}
+@Override
+protected void onPause() {
+super.onPause();
+notify("onPause");
+}
+@Override
+protected void onResume() {
+super.onResume();
+notify("onResume");
+}
+@Override
+protected void onStop() {
+super.onStop();
+notify("onStop");
+}
+@Override
+protected void onDestroy() {
+super.onDestroy();
+notify("onDestroy");
+}
+@Override
+protected void onRestoreInstanceState(Bundle savedInstanceState) {
+super.onRestoreInstanceState(savedInstanceState)
+notify("onRestoreInstanceState");
+}
+@Override
+protected void onSaveInstanceState(Bundle outState) {
+super.onSaveInstanceState(outState);
+notify("onSaveInstanceState");
+}
+private void notify(String methodName) {
+String name = this.getClass().getName();
+String[] strings = name.split("\\.");
+Toast.makeText(getApplicationContext(),
+methodName + "" + strings[strings.length - 1],
+Toast.LENGTH_LONG).show();
+}
+}
+
+Activity_main.xml :
+
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+tools:context="example.activitylifecycle.MainActivity">
+<TextView
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Hello World!"
+app:layout_constraintBottom_toBottomOf="parent"
+app:layout_constraintLeft_toLeftOf="parent"
+app:layout_constraintRight_toRightOf="parent"
+app:layout_constraintTop_toTopOf="parent" />
+</android.support.constraint.ConstraintLayout>
+
+
+B) Create table Customer (id, name, address, phno). Create Android Application for performing the
+following operation on the table. (usingsqlite database)
+i) Insert New Customer Details.
+ii) Show All the Customer Details
+[20]
+MainActivity.java :
+package com.example.slip1_2;
+import androidx.appcompat.app.AppCompatActivity;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.*;
+public class MainActivity extends AppCompatActivity {
+private EditText nameEditText;
+private EditText addressEditText;
+private EditText phoneNumberEditText;
+private Button addButton;
+private ListView customerListView;
+private SQLiteDatabase database;
+private Cursor cursor;
+private SimpleCursorAdapter adapter;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+nameEditText = findViewById(R.id.name_edit_text);
+addressEditText = findViewById(R.id.address_edit_text);
+phoneNumberEditText = findViewById(R.id.phone_number_edit_text);
+addButton = findViewById(R.id.add_button);
+customerListView = findViewById(R.id.customer_list_view);
+database = new DatabaseHelper(this).getWritableDatabase();
+addButton.setOnClickListener(new View.OnClickListener() {
+@Override
+public void onClick(View v) {
+String name = nameEditText.getText().toString();
+String address = addressEditText.getText().toString();
+String phoneNumber =
+phoneNumberEditText.getText().toString();
+ContentValues values = new ContentValues();
+values.put("name", name);
+values.put("address", address);
+values.put("phno", phoneNumber);
+long result = database.insert("Customer", null, values);
+if (result == -1) {
+Toast.makeText(MainActivity.this, "Failed to add
+customer", Toast.LENGTH_SHORT).show();
+} else {
+Toast.makeText(MainActivity.this, "Customer added
+successfully", Toast.LENGTH_SHORT).show();
+nameEditText.setText("");
+addressEditText.setText("");
+phoneNumberEditText.setText("");
+cursor = database.rawQuery("SELECT * FROM Customer",
+null);
+}
+}
+});
+adapter.swapCursor(cursor);
+cursor = database.rawQuery("SELECT * FROM Customer", null);
+adapter = new SimpleCursorAdapter(this,
+R.layout.customer_item,
+cursor,
+new String[]{"name", "address", "phno"},
+new int[]{R.id.name_text_view, R.id.address_text_view,
+R.id.phone_number_text_view},
+0);
+customerListView.setAdapter(adapter);
+}
+@Override
+protected void onDestroy() {
+super.onDestroy();
+cursor.close();
+database.close();
+}
+}
+DatabaseHelper.java :
+
+package com.example.slip1_2;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import java.util.*;
+public class DatabaseHelper extends SQLiteOpenHelper {
+private static final String DATABASE_NAME = "customers";
+private static final int DATABASE_VERSION = 1;
+private static final String TABLE_NAME = "Customer";
+private static final String COLUMN_ID = "_id";
+private static final String COLUMN_NAME = "name";
+private static final String COLUMN_ADDRESS = "address";
+private static final String COLUMN_PHONE_NUMBER = "phno";
+public DatabaseHelper(Context context) {
+super(context, DATABASE_NAME, null, DATABASE_VERSION);
+}
+@Override
+public void onCreate(SQLiteDatabase db) {
+String createTable = " CREATE TABLE " + TABLE_NAME
++ "("+ COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_NAME + " TEXT, "
++ COLUMN_ADDRESS + " TEXT,"
++ COLUMN_PHONE_NUMBER + " TEXT)";
+db.execSQL(createTable);
+}
+@Override
+public void onUpgrade(SQLiteDatabase db, int oldVersion, int
+newVersion) {
+db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME + ";");
+onCreate(db);
+}
+public boolean insertCustomer(Customer customer) {
+SQLiteDatabase db = getWritableDatabase();
+ContentValues values = new ContentValues();
+values.put(COLUMN_NAME, customer.getName());
+values.put(COLUMN_ADDRESS, customer.getAddress());
+values.put(COLUMN_PHONE_NUMBER, customer.getPhoneNumber());
+long newRowId = db.insert(TABLE_NAME, null, values);
+return newRowId != -1;
+}
+public List<Customer> getAllCustomers() {
+SQLiteDatabase db = getReadableDatabase();
+String[] projection = {
+COLUMN_ID,
+COLUMN_NAME,
+COLUMN_ADDRESS,
+COLUMN_PHONE_NUMBER
+};
+Cursor cursor = db.query(
+TABLE_NAME,
+projection,
+null,
+null,
+null,
+null,
+null
+);
+List<Customer> customers = new ArrayList<>();
+while (cursor.moveToNext()) {
+int id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
+String name =
+cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
+String address =
+cursor.getString(cursor.getColumnIndex(COLUMN_ADDRESS));
+String phoneNumber =
+cursor.getString(cursor.getColumnIndex(COLUMN_PHONE_NUMBER));
+customers.add(new Customer(id, name, address, phoneNumber));
+}
+cursor.close();
+return customers;
+}
+}
+
+Customer.java :
+package com.example.slip1_2;
+public class Customer {
+private int id;
+private String name;
+private String address;
+private String phoneNumber;
+public Customer(int id, String name, String address, String
+phoneNumber) {
+this.id = id;
+this.name = name;
+this.address = address;
+this.phoneNumber = phoneNumber;
+}
+public int getId() {
+return id;
+}
+public String getName() {
+return name;
+}
+public String getAddress() {
+return address;
+}
+public String getPhoneNumber() {
+return phoneNumber;
+}
+}
+
+Activity.xml :
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools">
+<application
+android:allowBackup="true"
+android:dataExtractionRules="@xml/data_extraction_rules"
+android:fullBackupContent="@xml/backup_rules"
+android:icon="@mipmap/ic_launcher"
+android:label="@string/app_name"
+android:supportsRtl="true"
+android:theme="@style/Theme.Slip1_2"
+tools:targetApi="31">
+<activity
+android:name=".MainActivity"
+android:exported="true">
+<intent-filter>
+<action android:name="android.intent.action.MAIN" />
+<category android:name="android.intent.category.LAUNCHER"
+/>
+</intent-filter>
+</activity>
+</application>
+</manifest>
+
+
+
+Q.2 A) Write a C program to find whether a given file is present in current directory or not.
+SOLUTION:
+
+#include <stdio.h>
+#include <unistd.h>
+int main(int argc, char *argv[])
+{
+if (access(argv[1],F_OK)==0)
+printf("File %s exists", argv[1]);
+else
+printf("File %s doesn't exist.", argv[1]);
+
+return 0;
+}
+
+
+B) Write a C program which blocks SIGOUIT signal for 5 seconds. After 5 second process checks any
+occurrence of quit signal during this period, if so, it unblock the signal. Now another occurrence of quit
+signal terminates the program. (Use sigprocmask() and sigpending() )
+
+SOLUTION:
+
+#include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <sys/types.h>
+
+void signal_handler(int signum) {
+    printf("Received SIGQUIT signal.\n");
+    exit(0);
+}
+
+int main() {
+    sigset_t blocked_set, old_set, pending_set;
+    struct sigaction sa;
+   
+    // Set up signal handler for SIGQUIT
+    sa.sa_handler = signal_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+    if (sigaction(SIGQUIT, &sa, NULL) == -1) {
+        perror("Error setting up signal handler");
+        return 1;
+    }
+   
+    // Block SIGQUIT signal
+    sigemptyset(&blocked_set);
+    sigaddset(&blocked_set, SIGQUIT);
+    if (sigprocmask(SIG_BLOCK, &blocked_set, &old_set) == -1) {
+        perror("Error blocking signal");
+        return 1;
+    }
+   
+    printf("Blocked SIGQUIT signal for 5 seconds.\n");
+    sleep(5);
+   
+    // Check for pending signals
+    if (sigpending(&pending_set) == -1) {
+        perror("Error checking pending signals");
+        return 1;
+    }
+   
+    // Unblock SIGQUIT if it is pending
+    if (sigismember(&pending_set, SIGQUIT)) {
+        printf("SIGQUIT signal detected during the 5-second period. Unblocking signal.\n");
+        if (sigprocmask(SIG_UNBLOCK, &blocked_set, NULL) == -1) {
+            perror("Error unblocking signal");
+            return 1;
+        }
+    }
+   
+    printf("Waiting for SIGQUIT signal. Send SIGQUIT to terminate the program.\n");
+   
+    // Wait for SIGQUIT to terminate the program
+    while (1) {
+        pause();
+    }
+   
+    return 0;
+}
+

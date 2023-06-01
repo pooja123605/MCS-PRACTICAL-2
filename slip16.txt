@@ -1,0 +1,403 @@
+Q.1
+A) Create a Simple Android Application Which Send ―Hello‖ message from one activity to another
+with help of Button (Use Intent).
+[10]
+
+SOLUTION:
+
+Activity_main.xml
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingTop="16dp"
+    android:paddingRight="16dp"
+    android:paddingBottom="16dp"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/btnSend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Send Hello"
+        android:layout_centerInParent="true"/>
+
+</RelativeLayout>
+
+Mainactivity.java
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private Button btnSend;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        btnSend = findViewById(R.id.btnSend);
+
+        btnSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Create an Intent to start the second activity
+                Intent intent = new Intent(MainActivity.this, SecondActivity.class);
+                intent.putExtra("message", "Hello");
+
+                // Start the second activity
+                startActivity(intent);
+            }
+        });
+    }
+}
+
+Secondactivity.java
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class SecondActivity extends AppCompatActivity {
+
+    private TextView txtMessage;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_second);
+
+        txtMessage = findViewById(R.id.txtMessage);
+
+        // Retrieve the message from the intent
+        Intent intent = getIntent();
+        String message = intent.getStringExtra("message");
+
+        // Set the message in the TextView
+        txtMessage.setText(message);
+    }
+}
+
+Activity_second.xml
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingTop="16dp"
+    android:paddingRight="16dp"
+    android:paddingBottom="16dp"
+    tools:context=".SecondActivity">
+
+    <TextView
+        android:id="@+id/txtMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:textColor="#000000"
+        android:layout_centerInParent="true"/>
+
+</RelativeLayout>
+
+
+B) Create an Android application which will ask the user to input his name and a message, display the
+two items concatenated in a label, and change the format of the label using radio buttons and check
+boxes for selection, the user can make the label text bold, underlined or italic and change its color
+.include buttons to display the message in the label, clear the text boxes and label and then exit.
+
+SOLUTION:
+
+Activity_main.xml
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".MainActivity">
+
+    <EditText
+        android:id="@+id/editTextName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter your name" />
+
+    <EditText
+        android:id="@+id/editTextMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter your message" />
+
+    <RadioGroup
+        android:id="@+id/radioGroupStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radioButtonBold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bold" />
+
+        <RadioButton
+            android:id="@+id/radioButtonItalic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Italic" />
+
+        <RadioButton
+            android:id="@+id/radioButtonUnderline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Underline" />
+    </RadioGroup>
+
+    <CheckBox
+        android:id="@+id/checkBoxColor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Change Color" />
+
+    <Button
+        android:id="@+id/buttonDisplay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Display" />
+
+    <Button
+        android:id="@+id/buttonClear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Clear" />
+
+    <TextView
+        android:id="@+id/textViewResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp" />
+</LinearLayout>
+
+
+Mainactivity.java
+
+import android.graphics.Color;
+import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.StyleSpan;
+import android.text.style.UnderlineSpan;
+import android.text.style.ForegroundColorSpan;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private EditText nameEditText;
+    private EditText messageEditText;
+    private TextView labelTextView;
+    private CheckBox boldCheckBox;
+    private CheckBox italicCheckBox;
+    private CheckBox underlineCheckBox;
+    private RadioGroup colorRadioGroup;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        nameEditText = findViewById(R.id.nameEditText);
+        messageEditText = findViewById(R.id.messageEditText);
+        labelTextView = findViewById(R.id.labelTextView);
+        boldCheckBox = findViewById(R.id.boldCheckBox);
+        italicCheckBox = findViewById(R.id.italicCheckBox);
+        underlineCheckBox = findViewById(R.id.underlineCheckBox);
+        colorRadioGroup = findViewById(R.id.colorRadioGroup);
+
+        Button displayButton = findViewById(R.id.displayButton);
+        displayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displayLabel();
+            }
+        });
+
+        Button clearButton = findViewById(R.id.clearButton);
+        clearButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clearFields();
+            }
+        });
+
+        Button exitButton = findViewById(R.id.exitButton);
+        exitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
+
+    private void displayLabel() {
+        String name = nameEditText.getText().toString().trim();
+        String message = messageEditText.getText().toString().trim();
+
+        if (!name.isEmpty() && !message.isEmpty()) {
+            StringBuilder builder = new StringBuilder();
+            builder.append(name).append(": ").append(message);
+
+            SpannableString spannableString = new SpannableString(builder.toString());
+
+            if (boldCheckBox.isChecked()) {
+                spannableString.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, spannableString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+
+            if (italicCheckBox.isChecked()) {
+                spannableString.setSpan(new StyleSpan(android.graphics.Typeface.ITALIC), 0, spannableString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+
+            if (underlineCheckBox.isChecked()) {
+                spannableString.setSpan(new UnderlineSpan(), 0, spannableString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+
+            int color = Color.BLACK;
+            int selectedRadioButtonId = colorRadioGroup.getCheckedRadioButtonId();
+            if (selectedRadioButtonId != -1) {
+                RadioButton selectedRadioButton = findViewById(selectedRadioButtonId);
+                String selectedColor = selectedRadioButton.getText().toString().toLowerCase();
+                switch (selectedColor) {
+                    case "red":
+                        color = Color.RED;
+                        break;
+                    case "green":
+                        color = Color.GREEN;
+                        break;
+                    case "blue":
+                        color = Color.BLUE;
+                        break;
+                }
+            }
+
+            spannableString.setSpan(new ForegroundColorSpan(color), 0, spannableString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            labelTextView.setText(spannableString);
+        } else {
+            Toast.makeText(this, "Please enter your name and message", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void clearFields() {
+        nameEditText.setText("");
+        messageEditText.setText("");
+        labelTextView.setText("");
+        boldCheckBox.setChecked(false);
+        italicCheckBox.setChecked(false);
+        underlineCheckBox.setChecked(false);
+        colorRadioGroup.clearCheck();
+    }
+}
+
+Q.2
+A)Write a C program that catches the ctrl-c (SIGINT) signal for the first time and display the
+appropriate message and exits on pressing ctrl-c again.
+
+SOLUTION:
+
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <signal.h>
+void sigfun(int sig)
+{
+printf("You have presses Ctrl-C , please press again to exit");
+(void) signal(SIGINT, SIG_DFL);
+}
+int main()
+{
+(void) signal(SIGINT, sigfun);
+
+while(1) {
+printf("Hello World!");
+sleep(1);
+}
+return(0);
+}
+B) Write a C program to implement the following unix/linux command on current directory
+ls –l > output.txt
+DO NOT simply exec ls -l > output.txt or system command from the program.
+
+SOLUTION:
+
+#include <stdio.h>
+#include <dirent.h>
+#include <sys/stat.h>
+
+int main() {
+    // Open current directory
+    DIR *dir = opendir(".");
+    if (dir == NULL) {
+        printf("Error opening directory.\n");
+        return 1;
+    }
+
+    // Open output.txt file for writing
+    FILE *outputFile = fopen("output.txt", "w");
+    if (outputFile == NULL) {
+        printf("Error opening output file.\n");
+        return 1;
+    }
+
+    // Read directory entries
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL) {
+        // Get file information
+        struct stat fileInfo;
+        if (stat(entry->d_name, &fileInfo) == -1) {
+            printf("Error getting file info.\n");
+            return 1;
+        }
+
+        // Write file information to output.txt
+        fprintf(outputFile, "%s\t", entry->d_name);
+        fprintf(outputFile, (S_ISDIR(fileInfo.st_mode)) ? "d" : "-");
+        fprintf(outputFile, (fileInfo.st_mode & S_IRUSR) ? "r" : "-");
+        fprintf(outputFile, (fileInfo.st_mode & S_IWUSR) ? "w" : "-");
+        fprintf(outputFile, (fileInfo.st_mode & S_IXUSR) ? "x" : "-");
+        fprintf(outputFile, (fileInfo.st_mode & S_IRGRP) ? "r" : "-");
+        fprintf(outputFile, (fileInfo.st_mode & S_IWGRP) ? "w" : "-");
+        fprintf(outputFile, (fileInfo.st_mode & S_IXGRP) ? "x" : "-");
+        fprintf(outputFile, (fileInfo.st_mode & S_IROTH) ? "r" : "-");
+        fprintf(outputFile, (fileInfo.st_mode & S_IWOTH) ? "w" : "-");
+        fprintf(outputFile, (fileInfo.st_mode & S_IXOTH) ? "x" : "-");
+        fprintf(outputFile, "\n");
+    }
+
+    // Close directory and output file
+    closedir(dir);
+    fclose(outputFile);
+
+    printf("ls -l command executed successfully.\n");
+    return 0;
+}

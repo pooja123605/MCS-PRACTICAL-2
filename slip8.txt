@@ -1,0 +1,306 @@
+A) Write an Android program to read 5 numbers and print the sum of all
+List 1
+Ans
+Sum
+Avg
+[10]
+
+SOLUTION:
+package com.example.slip8_1;
+import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Toast;
+import java.util.Arrays;
+import java.util.List;
+public class MainActivity extends AppCompatActivity {
+EditText input, result;
+RadioButton sumButton, avgButton;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+input = findViewById(R.id.input);
+result = findViewById(R.id.result);
+sumButton = findViewById(R.id.sumButton);
+avgButton = findViewById(R.id.avgButton);
+}
+public void calculate(View view) {
+String[] numList = input.getText().toString().split(",");
+List<String> numStringList = Arrays.asList(numList);
+if (numStringList.size() != 5) {
+Toast.makeText(getApplicationContext(), "Please enter 5
+comma-separated numbers", Toast.LENGTH_SHORT).show();
+return;
+}
+int n1, n2, n3, n4, n5;
+int total = 0;
+double average;
+try {
+n1 = Integer.parseInt(numStringList.get(0));
+n2 = Integer.parseInt(numStringList.get(1));
+n3 = Integer.parseInt(numStringList.get(2));
+n4 = Integer.parseInt(numStringList.get(3));
+n5 = Integer.parseInt(numStringList.get(4));
+if (sumButton.isChecked()) {
+total = n1 + n2 + n3 + n4 + n5;
+result.setText(String.valueOf(total));
+} else if (avgButton.isChecked()) {
+average = (double) (n1 + n2 + n3 + n4 + n5) / 5;
+result.setText(String.format("%.2f", average));
+}
+} catch (NumberFormatException e) {
+Toast.makeText(getApplicationContext(), "Please enter 5
+comma-separated integers", Toast.LENGTH_SHORT).show();
+}
+}
+}
+Activity.xml :
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools">
+<application
+android:allowBackup="true"
+android:dataExtractionRules="@xml/data_extraction_rules"
+android:fullBackupContent="@xml/backup_rules"
+android:icon="@mipmap/ic_launcher"
+android:label="@string/app_name"
+android:supportsRtl="true"
+android:theme="@style/Theme.Slip8_1"
+tools:targetApi="31">
+<activity
+android:name=".MainActivity"
+android:exported="true">
+<intent-filter>
+<action android:name="android.intent.action.MAIN" />
+<category android:name="android.intent.category.LAUNCHER"
+/>
+</intent-filter>
+</activity>
+</application>
+</manifest>
+
+B) Create a Notification in Android and display the notification message on second activity
+SOLUTION:
+Activity.java :
+package com.example.slip8_2;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.os.Bundle;
+import android.view.View;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+public class MainActivity extends AppCompatActivity {
+private static final String CHANNEL_ID = "my_channel";
+int notificationId = 1;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+createNotificationChannel();
+}
+public void sendNotification(View view) {
+Intent intent = new Intent(this, SecondActivity.class);
+PendingIntent pendingIntent = PendingIntent.getActivity(
+this, 0, intent,
+PendingIntent.FLAG_IMMUTABLE |
+PendingIntent.FLAG_UPDATE_CURRENT);
+NotificationCompat.Builder builder = new
+NotificationCompat.Builder(this, CHANNEL_ID)
+.setSmallIcon(R.drawable.ic_launcher_foreground)
+.setContentTitle("My Notification")
+.setContentText("This is my notification.")
+.setContentIntent(pendingIntent)
+.setAutoCancel(true)
+.setPriority(NotificationCompat.PRIORITY_DEFAULT);
+NotificationManagerCompat notificationManager =
+NotificationManagerCompat.from(this);
+if (ActivityCompat.checkSelfPermission(this,
+android.Manifest.permission.POST_NOTIFICATIONS) !=
+PackageManager.PERMISSION_GRANTED) {
+return;
+}
+notificationManager.notify(notificationId, builder.build());
+}
+private void createNotificationChannel() {
+if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+CharSequence name = getString(R.string.channel_name);
+String description = getString(R.string.channel_description);
+int importance = NotificationManager.IMPORTANCE_DEFAULT;
+NotificationChannel channel = new
+NotificationChannel(CHANNEL_ID, name, importance);
+channel.setDescription(description);
+NotificationManager notificationManager =
+getSystemService(NotificationManager.class);
+notificationManager.createNotificationChannel(channel);
+}
+}
+}
+SecondActivity.java :
+package com.example.slip8_2;
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+public class SecondActivity extends AppCompatActivity {
+TextView messageTextView;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_second);
+messageTextView = findViewById(R.id.messageTextView);
+Intent intent = getIntent();
+String message = intent.getStringExtra("notificationMessage");
+messageTextView.setText(message);
+}
+}
+Activity.xml :
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools">
+<uses-permission android:name="android.permission.POST_NOTIFICATIONS"
+/>
+<application
+android:allowBackup="true"
+android:dataExtractionRules="@xml/data_extraction_rules"
+android:fullBackupContent="@xml/backup_rules"
+android:icon="@mipmap/ic_launcher"
+android:label="@string/app_name"
+android:supportsRtl="true"
+android:theme="@style/Theme.Slip8_2"
+tools:targetApi="31">
+<activity
+android:name=".SecondActivity"
+android:exported="false" />
+<activity
+android:name=".MainActivity"
+android:exported="true">
+<intent-filter>
+<action android:name="android.intent.action.MAIN" />
+<category android:name="android.intent.category.LAUNCHER"
+/>
+</intent-filter>
+</activity>
+</application>
+</manifest>
+
+
+Q.2 A) Write a C program to get and set the resource limits such as files, memory associated with a process.
+
+SOLUTION:
+
+#include <stdio.h>
+#include <sys/resource.h>
+#include <string.h>
+#include <errno.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
+int main() {
+
+struct rlimit old_lim, lim, new_lim;
+
+    // Get old limits
+if( getrlimit(RLIMIT_NOFILE, &old_lim) == 0)
+printf("Old limits -> soft limit= %ld \t"
+" hard limit= %ld \n", old_lim.rlim_cur,
+                                 old_lim.rlim_max);
+else
+fprintf(stderr, "%s\n", strerror(errno));
+
+    // Set new value
+lim.rlim_cur = 3;
+lim.rlim_max = 1024;
+
+    // Set limits
+if(setrlimit(RLIMIT_NOFILE, &lim) == -1)
+fprintf(stderr, "%s\n", strerror(errno));
+
+    // Get new limits
+if( getrlimit(RLIMIT_NOFILE, &new_lim) == 0)
+printf("New limits -> soft limit= %ld "
+"\t hard limit= %ld \n", new_lim.rlim_cur,
+                                  new_lim.rlim_max);
+else
+fprintf(stderr, "%s\n", strerror(errno));
+return 0;
+}
+Output:
+
+Old limits -> soft limit= 1048576  hard limit= 1048576
+New limits -> soft limit= 3          hard limit= 1024
+
+B) Write a C program which receives file names as command line arguments and display
+those filenames in ascending order according to their sizes.
+(e.g $ a.out a.txt b.txt c.txt, …)
+
+SOLUTION:
+
+#include<stdio.h>
+#include<dirent.h>
+#include<string.h>
+#include<sys/stat.h>
+#include<time.h>
+#include<stdlib.h>
+structfilelist
+{
+charfname[100];
+intfsize;
+};
+int main(intargc,char *argv[])
+{
+DIR *dp;
+inti,j,k;
+structdirent *ep;
+struct stat sb;
+charmon[100];
+structfilelist f1[100],temp;
+j=0;
+for(i=1;i<argc;i++)
+{
+dp=opendir("./");
+if (dp!=NULL)
+{
+while(ep=readdir(dp))
+{
+if((strcmp(ep->d_name,argv[i]))==0)
+{
+stat(ep->d_name,&sb);
+strcpy(f1[j].fname,ep->d_name);
+f1[j].fsize=sb.st_size;
+j++;
+break;
+}
+}
+}
+(void)closedir(dp);
+}
+for(i=0;i<j;i++)
+{
+for(k=0;k<=j;k++)
+{
+if(f1[i].fsize< f1[k].fsize)
+{
+temp=f1[k];
+f1[k]=f1[i];
+f1[i]=temp;
+}
+}
+}
+for(i=0;i<j;i++)
+{
+printf("%s\t%d\n",f1[i].fname,f1[i].fsize);
+}
+return 0;
+}

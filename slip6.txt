@@ -1,0 +1,304 @@
+A) Write an Android code to complete the following Array/List operations
+1. Union
+2. Intersection
+
+SOLUTION:
+Activity.java :
+package com.example.slip6_1;
+import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+public class MainActivity extends AppCompatActivity {
+private EditText list1EditText;
+private EditText list2EditText;
+private EditText ansEditText;
+private RadioButton unionRadioButton;
+private RadioButton intersectionRadioButton;
+private Button calculateButton;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+list1EditText = findViewById(R.id.list1_edittext);
+list2EditText = findViewById(R.id.list2_edittext);
+ansEditText = findViewById(R.id.result_edittext);
+unionRadioButton = findViewById(R.id.union_radiobutton);
+intersectionRadioButton =
+findViewById(R.id.intersection_radiobutton);
+calculateButton = findViewById(R.id.calculate_button);
+calculateButton.setOnClickListener(new View.OnClickListener() {
+@Override
+public void onClick(View v) {
+String[] list1 =
+list1EditText.getText().toString().split(",");
+String[] list2 =
+list2EditText.getText().toString().split(",");
+HashSet<String> set1 = new HashSet<>();
+HashSet<String> set2 = new HashSet<>();
+ArrayList<String> ansList = new ArrayList<>();
+for (String s : list1) {
+set1.add(s);
+}
+for (String s : list2) {
+set2.add(s);
+}
+if (unionRadioButton.isChecked()) {
+ansList.addAll(set1);
+ansList.addAll(set2);
+} else if (intersectionRadioButton.isChecked()) {
+for (String s : set1) {
+if (set2.contains(s)) {
+ansList.add(s);
+}
+}
+}
+StringBuilder ansBuilder = new StringBuilder();
+for (String s : ansList) {
+ansBuilder.append(s).append(",");
+}
+if (ansBuilder.length() > 0) {
+ansBuilder.deleteCharAt(ansBuilder.length() - 1);
+}
+ansEditText.setText(ansBuilder.toString());
+}
+});
+}
+}
+Activity.xml :
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools">
+<application
+android:allowBackup="true"
+android:dataExtractionRules="@xml/data_extraction_rules"
+android:fullBackupContent="@xml/backup_rules"
+android:icon="@mipmap/ic_launcher"
+android:label="@string/app_name"
+android:supportsRtl="true"
+android:theme="@style/Theme.Slip6_1"
+tools:targetApi="31">
+<activity
+android:name=".MainActivity"
+android:exported="true">
+<intent-filter>
+<action android:name="android.intent.action.MAIN" />
+<category android:name="android.intent.category.LAUNCHER"
+/>
+</intent-filter>
+</activity>
+</application>
+</manifest>
+
+
+B) Java Android Program to demonstrate login form with validation.
+
+SOLUTION:
+
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+public class LoginActivity extends AppCompatActivity {
+
+    private EditText etUsername;
+    private EditText etPassword;
+    private Button btnLogin;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+
+        etUsername = findViewById(R.id.et_username);
+        etPassword = findViewById(R.id.et_password);
+        btnLogin = findViewById(R.id.btn_login);
+
+        btnLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Get the entered username and password
+                String username = etUsername.getText().toString().trim();
+                String password = etPassword.getText().toString().trim();
+
+                // Validate the username and password
+                if (isValidCredentials(username, password)) {
+                    // Perform login logic here (e.g., make an API call, check against stored data, etc.)
+                    // If login is successful, navigate to the main activity
+                    navigateToMainActivity();
+                } else {
+                    // Display an error toast for invalid credentials
+                    Toast.makeText(LoginActivity.this, "Invalid username or password", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private boolean isValidCredentials(String username, String password) {
+        // Add your validation logic here (e.g., check against a database, validate against specific criteria, etc.)
+        // For demonstration purposes, we're checking for a simple condition
+        return username.equals("admin") && password.equals("password");
+    }
+
+    private void navigateToMainActivity() {
+        // Add code to navigate to the main activity after successful login
+        // For demonstration purposes, we're displaying a toast
+        Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+    }
+}
+
+
+
+Q.2 A) Write a C program to map a given file in memory and display the contain of mapped file in reverse.
+
+SOLUTION:
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/io.h>
+#include <sys/mman.h>
+
+int main(int argc, char *argv[])
+{
+unsigned char *f, *g;
+int size;
+struct stat s;
+const char * file_name = argv[1];
+int fd = open(argv[1], O_RDONLY);
+
+int status = fstat(fd, &s);
+size = s.st_size;
+int i;
+  f = (char *) mmap (0, size, PROT_READ, MAP_PRIVATE, fd, 0);
+  //g = (char *) mmap (0, size, PROT_READ, MAP_PRIVATE, fd, 0);
+
+for(i = 0; i < size; i++) {
+char c;
+
+c = f[i];
+putchar(c);
+  }
+  //ABOVE THIS WORKS
+
+
+  // int z = 0;
+  //while(f[z] != NULL) {
+  //z++;
+// printf("%d", z);
+  // }
+int x;
+int y = 0;
+close(fd);
+
+  FILE *f1;
+
+  f1 = fopen(argv[2], "w+");
+
+for(x = size - 1; x >= 0; x--)
+{
+char c;
+
+c = f[x];
+fputc(c, f1);
+   }
+return 0;
+}
+
+B) Write a C program that behaves like a shell (command interpreter). It has its own prompt say
+“NewShell$”. Any normal shell command is executed from your shell by starting a child process to
+execute the system program corresponding to the command. It should additionally interpret the
+following command.
+i)
+list f<dirname> - print name of all files in directory
+ii)
+list n <dirname> - print number of all entries
+iii)
+list i<dirname> - print name and inode of all files
+
+SOLUTION:
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<dirent.h>
+char *buff,*t1,*t2,*t3,ch;
+int pid;
+void list(char t2,char *t3)
+{
+  DIR *dir;
+struct dirent *entry;
+int cnt=0;
+dir=opendir(t3);
+if (dir==NULL)
+   {
+printf("Directory %s not found",t3);
+return;
+   }
+switch(t2)
+  {
+case 'f' : while((entry=readdir(dir))!=NULL)
+   {
+printf("%s\n",entry->d_name);
+   }
+break;
+case 'n' :  while((entry=readdir(dir))!=NULL)
+
+cnt++;                 
+printf("Total No of Entries: %d\n",cnt);
+break;
+case 'i' :  while((entry=readdir(dir))!=NULL)
+{
+printf("\n%s\t %d",entry->d_name,entry->d_ino);
+}
+break;
+default :  printf("Invalid argument");
+  }
+closedir(dir);
+}
+main()
+{
+while(1)
+   {
+printf("myshell$");
+fflush(stdin);
+t1=(char *)malloc(80);
+t2=(char *)malloc(80);
+t3=(char *)malloc(80);
+
+buff=(char *)malloc(80);
+fgets(buff,80,stdin);
+sscanf(buff,"%s %s %s",t1,t2,t3);
+if(strcmp(t1,"pause")==0)
+exit(0);
+else if(strcmp(t1,"list")==0)
+list(t2[0],t3);
+else
+{
+pid=fork();
+if(pid<0)
+printf("Child process is not created\n");
+else if(pid==0)
+{     
+execlp("/bin",NULL);
+if(strcmp(t1,"exit")==0)
+exit(0);
+system(buff);
+}
+else
+{     
+wait(NULL);
+exit(0);
+}
+}
+}
+}

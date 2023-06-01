@@ -1,0 +1,161 @@
+Q.1 A) Write an Android Program to Change the Image Displayed on the Screen
+
+import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.*;
+
+public class MainActivity extends AppCompatActivity
+{
+      private ImageView imageView; private Button changeButton;
+     @Override
+      protected void onCreate(Bundle savedInstanceState)
+   {     
+       super.onCreate(savedInstanceState);       
+       setContentView(R.layout.activity_main);
+ 
+        imageView = findViewById(R.id.imageView);
+       changeButton = findViewById(R.id.changeButton)
+ 
+       changeButton.setOnClickListener(new View.OnClickListener() 
+     {
+        @Override
+        public void onClick(View v)
+        {
+           imageView.setImageResource(R.drawable.adv);
+        }
+     } );
+}
+}
+
+B) Write an IOS application that toggles a light bulb on and off when the user clicks on switch button
+
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Switch;
+import android.widget.Toast;
+import android.view.View.OnClickListener;
+import android.app.Activity;
+
+public class MainActivity extends AppCompatActivity
+{
+Switch switchButton;
+private Activity activity;
+@Override
+protected void onCreate(Bundle savedInstanceState)
+{
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+activity = this;
+switchButton = findViewById(R.id.switch1);
+switchButton.setOnClickListener(new OnClickListener()
+{
+@Override
+public void onClick(View v)
+{
+if (switchButton.isChecked())
+{
+Toast.makeText (activity, "Switch is in ON State",Toast.LENGTH_LONG).show();
+}
+else
+{
+Toast.makeText (activity, "Switch is in OFF State",Toast.LENGTH_LONG).show();
+}
+}
+});
+}
+
+Q2.A) Write a C program to create an unnamed pipe. The child process will write following three messages to pipe and parent process display it.
+Message1 = “Hello World”
+Message2 = “Hello SPPU”
+Message3 = “Linux is Funny”
+
+#include<stdio.h>
+#include<unistd.h>
+int main()
+
+
+{
+int pipefds[2];
+int returnstatus;
+char writemessages[3][20]={"Hello World", "Hello SPPU","Linux is Funny"};
+char readmessage[20];
+returnstatus = pipe(pipefds);
+             if (returnstatus == -1)
+{
+printf("Unable to create pipe\n");
+return 1;
+}
+int child = fork();
+if(child==0)
+{
+printf("Child is Writing to pipe - Message 1 is %s\n", writemessages[0]);
+write(pipefds[1], writemessages[0], sizeof(writemessages[0]));
+printf("Child is Writing to pipe - Message 2 is %s\n", writemessages[1]);
+write(pipefds[1], writemessages[1], sizeof(writemessages[1]));
+printf("Child is Writing to pipe - Message 3 is %s\n", writemessages[2]);
+write(pipefds[1], writemessages[2], sizeof(writemessages[2]));
+}
+else
+{
+read(pipefds[0], readmessage, sizeof(readmessage));
+printf("Parent Process is Reading from pipe – Message 1 is %s\n", readmessage);
+read(pipefds[0], readmessage, sizeof(readmessage));
+printf("Parent Process is Reading from pipe – Message 2 is %s\n", readmessage);
+read(pipefds[0], readmessage, sizeof(readmessage));
+printf("Parent Process is Reading from pipe – Message 3 is %s\n", readmessage);
+}   
+}
+OUTPUT:
+Child is Writing to pipe - Message 1 is Hello World
+Child is Writing to pipe - Message 2 is Hello SPPU
+Child is Writing to pipe - Message 3 is Linux is Funny
+Parent Process is Reading from pipe – Message 1 is Hello World
+Parent Process is Reading from pipe – Message 2 is Hello SPPU
+Parent Process is Reading from pipe – Message 3 is Linux is Funny
+
+Q2 .B)Write a C program to read all txt files (that is files that ends with .txt) in the current directory and merge them all to one txt file and returns a file descriptor for the new file.
+
+#include <stdio.h>
+#include <dirent.h>
+#include <string.h>
+int main(void)
+{
+FILE *input, *output;
+char ch;
+char *txt = ".txt";
+struct dirent *de;
+DIR *dr = opendir(".");
+if(dr == NULL)
+{
+printf("Can't open current directory.");
+return 0;
+}
+while((de = readdir(dr)) != NULL)
+{
+char *filename = de->d_name;
+char *ext = strrchr(filename, '.');
+if(!(!ext || ext == filename))
+{
+if(strcmp(ext, txt) == 0)
+{
+output = fopen("output.txt", "a+");
+input = fopen(filename, "r");
+while(1)
+{
+ch = fgetc(input);
+if(ch == EOF) break;
+putc(ch, output);
+}
+fclose(input);
+fclose(output);
+}
+}
+}
+closedir(dr);
+printf("Succesfully copied the contents of all .txt files into output.txt.\n");
+return 0;
+}
+OUTPUT:
+Successfully copied the contents of all .txt files into output.txt

@@ -1,0 +1,292 @@
+A) Create a Simple Android Application Which Send ―Hello‖ message from one activity to another
+with help of Button (Use Intent).
+
+SOLUTION:
+Activity.java :
+package com.example.slip4_1;
+import androidx.appcompat.app.AppCompatActivity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+public class MainActivity extends AppCompatActivity {
+private Button helloButton;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+helloButton = findViewById(R.id.hello_button);
+helloButton.setOnClickListener(new View.OnClickListener() {
+@Override
+public void onClick(View v) {
+// Create an intent to start the ResultActivity
+Intent intent = new Intent(MainActivity.this,
+ResultActivity.class);
+// Add the "Hello" message as an extra to the intent
+intent.putExtra("message", "Hello");
+// Start the ResultActivity
+startActivity(intent);
+}
+});
+}
+}
+Result.java :
+package com.example.slip4_1;
+import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import android.widget.TextView;
+public class ResultActivity extends AppCompatActivity {
+private TextView helloTextView;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_result);
+helloTextView = findViewById(R.id.hello_textview);
+// Get the "Hello" message from the intent's extras
+String message = getIntent().getStringExtra("message");
+// Set the "Hello" message in the text view
+helloTextView.setText(message);
+}
+}
+Activity.xml :
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools">
+<application
+android:allowBackup="true"
+android:dataExtractionRules="@xml/data_extraction_rules"
+android:fullBackupContent="@xml/backup_rules"
+android:icon="@mipmap/ic_launcher"
+android:label="@string/app_name"
+android:supportsRtl="true"
+android:theme="@style/Theme.Slip4_1"
+tools:targetApi="31">
+<activity
+android:name=".ResultActivity"
+android:exported="false" />
+<activity
+android:name=".MainActivity"
+android:exported="true">
+<intent-filter>
+<action android:name="android.intent.action.MAIN" />
+<category android:name="android.intent.category.LAUNCHER" />
+</intent-filter>
+</activity>
+</application>
+</manifest>
+
+
+
+B) Write an IOS application to implement UI elements like TableView and selected item of the
+TableView is displayed in the second view.
+
+ViewController.swift
+
+import UIKit
+
+class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+   
+    let items = ["Item 1", "Item 2", "Item 3"] // Replace with your own list of items
+   
+    @IBOutlet weak var tableView: UITableView!
+   
+    override func viewDidLoad() {
+        super.viewDidLoad()
+       
+        tableView.delegate = self
+        tableView.dataSource = self
+    }
+   
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return items.count
+    }
+   
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+        cell.textLabel?.text = items[indexPath.row]
+        return cell
+    }
+   
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let selectedItem = items[indexPath.row]
+        performSegue(withIdentifier: "DetailSegue", sender: selectedItem)
+    }
+   
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "DetailSegue" {
+            if let detailViewController = segue.destination as? DetailViewController,
+               let selectedItem = sender as? String {
+                detailViewController.selectedItem = selectedItem
+            }
+        }
+    }
+}
+
+DetailViewController.swift
+
+import UIKit
+
+class DetailViewController: UIViewController {
+   
+    var selectedItem: String?
+   
+    @IBOutlet weak var itemLabel: UILabel!
+   
+    override func viewDidLoad() {
+        super.viewDidLoad()
+       
+        if let selectedItem = selectedItem {
+            itemLabel.text = selectedItem
+        }
+    }
+}
+
+
+Q.2 A)Write a C program to find file properties such as inode number, number of hard link, File
+permissions, File size, File access and modification time and so on of a given file using fstat() system
+call.
+
+SOLUTION:
+
+#include <unistd.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+
+int main(int argc, char **argv)
+{
+if(argc != 2)
+return 1;
+
+int file=0;
+if((file=open(argv[1],O_RDONLY)) < -1)
+return 1;
+
+struct stat fileStat;
+if(fstat(file,&fileStat) < 0)
+return 1;
+
+printf("Information for %s\n",argv[1]);
+printf("---------------------------\n");
+printf("File Size: \t\t%d bytes\n",fileStat.st_size);
+printf("Number of Hard Links: \t%d\n",fileStat.st_nlink);
+printf("File inode: \t\t%d\n",fileStat.st_ino);
+
+//printf("Last file access:     %s", ctime(&fileStat.st_atime));
+//printf("Last file modification:   %s", ctime(&fileStat.st_mtime));
+
+printf("File Permissions: \t");
+printf( (S_ISDIR(fileStat.st_mode)) ? "d" : "-");
+printf( (fileStat.st_mode & S_IRUSR) ? "r" : "-");
+printf( (fileStat.st_mode & S_IWUSR) ? "w" : "-");
+printf( (fileStat.st_mode & S_IXUSR) ? "x" : "-");
+printf( (fileStat.st_mode & S_IRGRP) ? "r" : "-");
+printf( (fileStat.st_mode & S_IWGRP) ? "w" : "-");
+printf( (fileStat.st_mode & S_IXGRP) ? "x" : "-");
+printf( (fileStat.st_mode & S_IROTH) ? "r" : "-");
+printf( (fileStat.st_mode & S_IWOTH) ? "w" : "-");
+printf( (fileStat.st_mode & S_IXOTH) ? "x" : "-");
+printf("\n");
+close(file);
+return 0;
+
+}
+
+B) Write a C program to implement the following unix/linux command (use fork, pipe and exec
+system call). Your program should block the signal Ctrl-C and Ctrl-\ signal during the execution.
+ls –l | wc–l
+
+SOLUTION:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <signal.h>
+
+void signal_handler(int signum) {
+    // Empty signal handler to block signals
+}
+
+int main() {
+    int pipefd[2];
+    pid_t ls_pid, wc_pid;
+    int status;
+   
+    // Create the pipe
+    if (pipe(pipefd) == -1) {
+        perror("Error creating pipe");
+        return 1;
+    }
+   
+    // Block SIGINT and SIGQUIT signals
+    struct sigaction sa;
+    sa.sa_handler = signal_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+    if (sigaction(SIGINT, &sa, NULL) == -1 || sigaction(SIGQUIT, &sa, NULL) == -1) {
+        perror("Error blocking signals");
+        return 1;
+    }
+   
+    // Fork the first child process for "ls -l"
+    ls_pid = fork();
+    if (ls_pid == -1) {
+        perror("Error forking");
+        return 1;
+    } else if (ls_pid == 0) {
+        // Child process: "ls -l"
+        // Close the read end of the pipe
+        close(pipefd[0]);
+       
+        // Redirect stdout to the write end of the pipe
+        dup2(pipefd[1], STDOUT_FILENO);
+       
+        // Close the write end of the pipe
+        close(pipefd[1]);
+       
+        // Execute "ls -l"
+        execlp("ls", "ls", "-l", NULL);
+       
+        // Exec failed if reached this line
+        perror("Error executing ls");
+        exit(1);
+    }
+   
+    // Fork the second child process for "wc -l"
+    wc_pid = fork();
+    if (wc_pid == -1) {
+        perror("Error forking");
+        return 1;
+    } else if (wc_pid == 0) {
+        // Child process: "wc -l"
+        // Close the write end of the pipe
+        close(pipefd[1]);
+       
+        // Redirect stdin to the read end of the pipe
+        dup2(pipefd[0], STDIN_FILENO);
+       
+        // Close the read end of the pipe
+        close(pipefd[0]);
+       
+        // Execute "wc -l"
+        execlp("wc", "wc", "-l", NULL);
+       
+        // Exec failed if reached this line
+        perror("Error executing wc");
+        exit(1);
+    }
+   
+    // Close the pipe ends in the parent process
+    close(pipefd[0]);
+    close(pipefd[1]);
+   
+    // Wait for both child processes to finish
+    waitpid(ls_pid, &status, 0);
+    waitpid(wc_pid, &status, 0);
+   
+    return 0;
+}

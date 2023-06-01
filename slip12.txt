@@ -1,0 +1,330 @@
+
+A) Write an Android program to perform Zoom In, Zoom Out operation and display Satellite view, on
+Google Map.
+[10]
+
+build.gradle(dependencies)
+
+implementation 'com.google.android.gms:play-services-maps:17.0.1'
+
+Activity_main.xml
+
+<com.google.android.gms.maps.MapView
+    android:id="@+id/mapView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />
+
+Mainactivity.java
+
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import androidx.appcompat.app.AppCompatActivity;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
+
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+
+    private MapView mapView;
+    private GoogleMap googleMap;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        mapView = findViewById(R.id.mapView);
+        mapView.onCreate(savedInstanceState);
+        mapView.getMapAsync(this);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap map) {
+        googleMap = map;
+
+        LatLng location = new LatLng(37.7749, -122.4194); // San Francisco coordinates
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 12));
+
+        // Uncomment the following line to enable satellite view by default
+        // googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.map_options, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_zoom_in:
+                googleMap.animateCamera(CameraUpdateFactory.zoomIn());
+                return true;
+            case R.id.menu_zoom_out:
+                googleMap.animateCamera(CameraUpdateFactory.zoomOut());
+                return true;
+            case R.id.menu_satellite:
+                googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                return true;
+            case R.id.menu_normal:
+                googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mapView.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mapView.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mapView.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mapView.onLowMemory();
+    }
+}
+
+
+
+B) Create an Android application, where the user can enter player name and points in one view and
+display it in another view.
+
+Activity_main.xml
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/editTextName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter player name"
+        android:layout_marginBottom="16dp" />
+
+    <EditText
+        android:id="@+id/editTextPoints"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+Activity_player_details.xml
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_player_details"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/textViewName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Player Name:"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textViewPoints"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textViewName"
+        android:layout_marginTop="16dp"
+        android:text="Points:"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textViewPlayerName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/textViewName"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="2dp" />
+
+    <TextView
+        android:id="@+id/textViewPlayerPoints"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textViewPlayerName"
+        android:layout_toEndOf="@id/textViewPoints"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="2dp" />
+
+</RelativeLayout>
+
+Mainactivity.java
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private EditText editTextPlayerName;
+    private EditText editTextPoints;
+    private Button buttonSubmit;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        editTextPlayerName = findViewById(R.id.editTextPlayerName);
+        editTextPoints = findViewById(R.id.editTextPoints);
+        buttonSubmit = findViewById(R.id.buttonSubmit);
+
+        buttonSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String playerName = editTextPlayerName.getText().toString();
+                String points = editTextPoints.getText().toString();
+
+                Intent intent = new Intent(MainActivity.this, DisplayActivity.class);
+                intent.putExtra("playerName", playerName);
+                intent.putExtra("points", points);
+                startActivity(intent);
+            }
+        });
+    }
+}
+
+
+Q.2 A)Write a C program to send SIGALRM signal by child process to parent process and parent process
+make a provision to catch the signal and display alarm is fired.(Use Kill, fork, signal and sleep system
+call)
+
+SOLUTION:
+
+#include <fcntl.h>
+#include <unistd.h>
+#include <stdio.h>
+#include<signal.h>
+#include<sys/types.h>
+#include<sys/wait.h>
+#include <stdlib.h>
+void Dingdong()
+{
+printf("Ding!");
+exit(1);
+
+}
+int main(int argc, char *argv[])
+{
+if(argc!=3)
+{
+printf("How much seconds you want to sleep the child process\n");
+}
+int PauseSecond=(argv[1]);
+    {
+if(fork()==0)
+{
+printf("waiting for alarm to go off\n");
+printf("%d second pause",PauseSecond);
+sleep(PauseSecond);
+kill(getpid(),SIGALRM);
+}
+else {
+printf("Alarm application starting\n", getpid());
+signal(SIGALRM,Dingdong);
+printf("done");
+}
+} 
+  }
+
+B) Write a C program to display all the files from current directory and its subdirectory whose size is
+greater than ’n’ Bytes Where n is accepted from user through command line.
+
+SOLUTION:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <dirent.h>
+#include <sys/stat.h>
+
+void displayFilesWithSize(char* path, int size) {
+    DIR* dir;
+    struct dirent* entry;
+    struct stat fileStat;
+
+    dir = opendir(path);
+
+    if (dir == NULL) {
+        printf("Unable to open directory.\n");
+        return;
+    }
+
+    while ((entry = readdir(dir)) != NULL) {
+        char filePath[1000];
+        snprintf(filePath, sizeof(filePath), "%s/%s", path, entry->d_name);
+
+        if (stat(filePath, &fileStat) == -1) {
+            printf("Unable to get file stats.\n");
+            continue;
+        }
+
+        if (S_ISDIR(fileStat.st_mode)) {
+            if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0) {
+                displayFilesWithSize(filePath, size);
+            }
+        } else {
+            if (fileStat.st_size > size) {
+                printf("File: %s, Size: %ld bytes\n", filePath, fileStat.st_size);
+            }
+        }
+    }
+
+    closedir(dir);
+}
+
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        printf("Usage: %s <size in bytes>\n", argv[0]);
+        return 1;
+    }
+
+    int size = atoi(argv[1]);
+
+    if (size <= 0) {
+        printf("Invalid size.\n");
+        return 1;
+    }
+
+    char currentDirectory[1000];
+    if (getcwd(currentDirectory, sizeof(currentDirectory)) == NULL) {
+        printf("Unable to get current directory.\n");
+        return 1;
+    }
+
+    printf("Files with size greater than %d bytes:\n", size);
+    displayFilesWithSize(currentDirectory, size);
+
+    return 0;
+}

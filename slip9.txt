@@ -1,0 +1,146 @@
+A) Write a Swift program that accept two integer values and return true if one of them is 20 or if their
+sum is 20.
+[10]
+SOLUTION:
+func isSumOrTwenty(_ num1: Int, _ num2: Int) -> Bool {
+    if num1 == 20 || num2 == 20 || num1 + num2 == 20 {
+        return true
+    }
+    return false
+}
+
+// Example usage:
+let number1 = 10
+let number2 = 20
+let result = isSumOrTwenty(number1, number2)
+print(result) // Output: true
+
+B) Write an Android Application to demonstrate Alert Dialog Box.
+[20]
+
+SOLUTION:
+Mainactivity.java
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+
+public class MainActivity extends AppCompatActivity {
+
+    private Button showAlertButton;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        showAlertButton = findViewById(R.id.show_alert_button);
+        showAlertButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Create and show the alert dialog
+                showAlert();
+            }
+        });
+    }
+
+    private void showAlert() {
+        // Create the AlertDialog.Builder object
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Alert Dialog")
+                .setMessage("This is an example of an Alert Dialog.")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Handle the positive button click
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Handle the negative button click
+                        dialog.dismiss();
+                    }
+                });
+
+        // Create and show the AlertDialog
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+}
+
+Activity.xml
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/show_alert_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show Alert Dialog"
+        android:layout_centerInParent="true" />
+
+</RelativeLayout>
+
+
+
+Q.2 A) Write a C program to display as well as resets the environment variable such as path, home, root etc.
+
+SOLUTION:
+
+#include <stdio.h>
+void main(int argc, char *argv[], char * envp[])
+{
+int i;
+for (i = 0; envp[i] != NULL; i++)
+{
+printf("\n%s", envp[i]);
+}
+/* set environment variable _EDC_ANSI_OPEN_DEFAULT to "Y" */            
+setenv("_EDC_ANSI_OPEN_DEFAULT","Y",1);                                 
+
+   /* set x to the current value of the _EDC_ANSI_OPEN_DEFAULT*/           
+   x = getenv("_EDC_ANSI_OPEN_DEFAULT");                                   
+
+printf("program1 _EDC_ANSI_OPEN_DEFAULT = %s\n",                        
+(x != NULL) ? x : "undefined");  
+}
+
+B) Write a C program that will only list all subdirectories in alphabetical order from current
+directory.
+[20]
+
+SOLUTION:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <dirent.h>
+
+int
+main(void)
+{
+struct dirent **namelist;
+int n;
+int i=0;
+   n = scandir(".", &namelist, 0, alphasort);
+if (n < 0)
+perror("scandir");
+else {
+while (i<n) {
+printf("%s\n", namelist[i]->d_name);
+free(namelist[i]);
+i++;
+}
+free(namelist);
+   }
+}

@@ -1,0 +1,278 @@
+Write a Swift program to compute the sum of the two integers. If the values are equal return the triple
+their sum.
+
+SOLUTION:
+
+func computeSum(_ a: Int, _ b: Int) -> Int {
+    if a == b {
+        return (a + b) * 3
+    } else {
+        return a + b
+    }
+}
+
+// Example usage
+let num1 = 5
+let num2 = 7
+let result = computeSum(num1, num2)
+print(result) // Output: 12
+
+let num3 = 4
+let num4 = 4
+let result2 = computeSum(num3, num4)
+print(result2) // Output: 24
+
+
+B) Construct an Android Application to accept a number and calculate Factorial and Sum of Digits of a
+given number using Menu.
+[20]
+
+SOLUTION:
+Activity.java :
+package com.example.slip11_1;
+import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.EditText;
+import android.widget.TextView;
+public class MainActivity extends AppCompatActivity {
+private EditText numberEditText;
+private TextView resultTextView;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+numberEditText = findViewById(R.id.numberEditText);
+resultTextView = findViewById(R.id.resultTextView);
+}
+@Override
+public boolean onCreateOptionsMenu(Menu menu) {
+getMenuInflater().inflate(R.menu.main_menu, menu);
+return true;
+}
+@Override
+public boolean onOptionsItemSelected(MenuItem item) {
+switch (item.getItemId()) {
+case R.id.calculateFactorial:
+calculateFactorial();
+return true;
+case R.id.calculateSum:
+calculateSumOfDigits();
+return true;
+default:
+return super.onOptionsItemSelected(item);
+}
+}
+private void calculateFactorial() {
+try {
+int number =
+Integer.parseInt(numberEditText.getText().toString());
+int factorial = 1;
+for (int i = 1; i <= number; i++) {
+factorial *= i;
+factorial);
+}
+resultTextView.setText("Factorial of " + number + " is " +
+} catch (NumberFormatException e) {
+resultTextView.setText("Please enter a valid number");
+}
+}
+private void calculateSumOfDigits() {
+try {
+int number =
+Integer.parseInt(numberEditText.getText().toString());
+int sum = 0;
+while (number != 0) {
+sum += number % 10;
+number /= 10;
+sum);
+}
+resultTextView.setText("Sum of digits of " + number + " is " +
+} catch (NumberFormatException e) {
+resultTextView.setText("Please enter a valid number");
+}
+}
+}
+Activity.xml :
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools">
+<application
+android:allowBackup="true"
+android:dataExtractionRules="@xml/data_extraction_rules"
+android:fullBackupContent="@xml/backup_rules"
+android:icon="@mipmap/ic_launcher"
+android:label="@string/app_name"
+android:supportsRtl="true"
+android:theme="@style/Theme.Slip11_1"
+tools:targetApi="31">
+<activity
+android:name=".MainActivity"
+android:exported="true">
+<intent-filter>
+<action android:name="android.intent.action.MAIN" />
+<category android:name="android.intent.category.LAUNCHER" />
+</intent-filter>
+</activity>
+</application>
+</manifest>
+
+Q.2 A) Write a C program to create variable length arrays using alloca() system call.
+
+SOLUTION:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Structure of type student
+struct student {
+int stud_id;
+int name_len;
+int struct_size;
+char stud_name[0];
+    // variable length array must be
+    // last.
+};
+
+// Memory allocation and initialisation of structure
+struct student* createStudent(struct student* s, int id,
+char a[])
+{
+    s = alloca(sizeof(*s) + sizeof(char) * strlen(a));
+
+s->stud_id = id;
+s->name_len = strlen(a);
+strcpy(s->stud_name, a);
+
+s->struct_size
+        = (sizeof(*s)
+           + sizeof(char) * strlen(s->stud_name));
+
+return s;
+}
+
+// Print student details
+void printStudent(struct student* s)
+{
+printf("Student_id : %d\n"
+           "Stud_Name : %s\n"
+           "Name_Length: %d\n"
+           "Allocated_Struct_size: %d\n\n",
+s->stud_id, s->stud_name, s->name_len,
+s->struct_size);
+
+    // Value of Allocated_Struct_size here is in bytes.
+}
+
+// Driver Code
+int main()
+{
+struct student *s1, *s2;
+
+    s1 = createStudent(s1, 523, "Sanjayulsha");
+    s2 = createStudent(s2, 535, "Cherry");
+
+printStudent(s1);
+printStudent(s2);
+
+    // size in bytes
+printf("Size of Struct student: %lu\n",
+sizeof(struct student));
+    // size in bytes
+printf("Size of Struct pointer: %lu", sizeof(s1));
+
+return 0;
+}
+
+
+B) Write a C program that behaves like a shell (command interpreter). It has its own prompt say
+“NewShell$”. Any normal shell command is executed from your shell by starting a child process to
+execute the system program corresponding to the command. It should additionally interpret the
+following command.
+i)
+count c <filename> - print number of characters in file
+ii)
+count w <filename> - print number of words in file
+iii)
+count l <filename> - print number of lines in file
+
+SOLUTION:
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+char *buff,*t1,*t2,*t3,ch;
+FILE *fp;
+int pid;
+void count(char *t2,char *t3)
+{
+int charcount=0,wordcount=0,linecount=0;
+if((fp=fopen(t3,"r"))==NULL)
+printf("File not found");
+else
+  {
+while((ch=fgetc(fp))!=EOF)
+{
+if(ch==' ')
+wordcount++;
+else if(ch=='\n')
+{
+linecount++;
+wordcount++;
+
+}
+else
+charcount++;
+}
+
+fclose(fp);
+if(strcmp(t2,"c")==0)
+printf("The total no. of characters :%d\n",charcount);
+else if(strcmp(t2,"w")==0)
+printf("The total no. of words :%d\n",wordcount);
+else if(strcmp(t2,"l")==0)
+printf("The total no. of lines :%d\n",linecount);
+else
+printf("Command not found");
+}
+
+}
+main()
+{
+while(1)
+   {
+printf("myshell$");
+fflush(stdin);
+t1=(char *)malloc(80);
+t2=(char *)malloc(80);
+t3=(char *)malloc(80);
+
+buff=(char *)malloc(80);
+fgets(buff,80,stdin);  
+sscanf(buff,"%s %s %s",t1,t2,t3);
+if(strcmp(t1,"pause")==0)
+exit(0);
+else if(strcmp(t1,"count")==0)
+count(t2,t3);
+else
+{
+pid=fork();
+if(pid<0)
+printf("Child process is not created\n");
+else if(pid==0)
+{         
+execlp("/bin",NULL);
+if(strcmp(t1,"exit")==0)
+exit(0);
+system(buff);
+}
+else
+{         
+wait(NULL);
+exit(0);
+}
+}
+    }
+}

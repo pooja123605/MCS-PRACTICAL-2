@@ -1,0 +1,391 @@
+A) Write a Swift program to create a new string where all the character "a" have been removed except
+the first and last positions.
+[10]
+
+SOLUTION:
+
+func removeCharacterA(_ input: String) -> String {
+    var result = ""
+
+    // Check if the input string has at least 2 characters
+    if input.count >= 2 {
+        // Get the first and last characters of the input string
+        let firstChar = input[input.startIndex]
+        let lastChar = input[input.index(before: input.endIndex)]
+
+        // Append the first character to the result string
+        result.append(firstChar)
+
+        // Loop through the characters in the input string, excluding the first and last positions
+        for index in input.indices.dropFirst().dropLast() {
+            let char = input[index]
+
+            // Check if the character is not "a"
+            if char != "a" {
+                // Append the character to the result string
+                result.append(char)
+            }
+        }
+
+        // Append the last character to the result string
+        result.append(lastChar)
+    } else {
+        // If the input string has less than 2 characters, return the input string itself
+        result = input
+    }
+
+    return result
+}
+
+// Example usage
+let input = "banana"
+let output = removeCharacterA(input)
+print(output) // Output: "bnana"
+
+
+B) Create table Company (id, name, address, phno). Create Android Application for performing the
+following operation on the table.(using sqlite database)
+i) Insert New Company Details.
+ii) Show All the Company Details.
+[20]
+
+SOLUTION:
+
+Company
+
+public class Company {
+    private int id;
+    private String name;
+    private String address;
+    private String phno;
+
+    public Company(int id, String name, String address, String phno) {
+        this.id = id;
+        this.name = name;
+        this.address = address;
+        this.phno = phno;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getPhno() {
+        return phno;
+    }
+}
+
+Databasehelper
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class DatabaseHelper extends SQLiteOpenHelper {
+    private static final String DATABASE_NAME = "company.db";
+    private static final int DATABASE_VERSION = 1;
+
+    private static final String TABLE_NAME = "Company";
+    private static final String COLUMN_ID = "id";
+    private static final String COLUMN_NAME = "name";
+    private static final String COLUMN_ADDRESS = "address";
+    private static final String COLUMN_PHNO = "phno";
+
+    public DatabaseHelper(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        String createTableQuery = "CREATE TABLE " + TABLE_NAME + " ("
+                + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + COLUMN_NAME + " TEXT,"
+                + COLUMN_ADDRESS + " TEXT,"
+                + COLUMN_PHNO + " TEXT"
+                + ")";
+        db.execSQL(createTableQuery);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        String dropTableQuery = "DROP TABLE IF EXISTS " + TABLE_NAME;
+        db.execSQL(dropTableQuery);
+        onCreate(db);
+    }
+
+    public void insertCompany(Company company) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_NAME, company.getName());
+        values.put(COLUMN_ADDRESS, company.getAddress());
+        values.put(COLUMN_PHNO, company.getPhno());
+        db.insert(TABLE_NAME, null, values);
+        db.close();
+    }
+
+    public List<Company> getAllCompanies() {
+        List<Company> companies = new ArrayList<>();
+        String selectQuery = "SELECT * FROM " + TABLE_NAME;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
+                String name = cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
+                String address = cursor.getString(cursor.getColumnIndex(COLUMN_ADDRESS));
+                String phno = cursor.getString(cursor.getColumnIndex(COLUMN_PHNO));
+                Company company = new Company(id, name, address, phno);
+                companies.add(company);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return companies;
+    }
+}
+
+Mainactivity.java
+
+public class MainActivity extends AppCompatActivity {
+    private EditText etName, etAddress, etPhno;
+    private Button btnAddCompany, btnShowCompanies;
+    private DatabaseHelper dbHelper;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        etName = findViewById(R.id.etName);
+        etAddress = findViewById(R.id.etAddress);
+        etPhno = findViewById(R.id.etPhno);
+        btnAddCompany = findViewById(R.id.btnAddCompany);
+        btnShowCompanies = findViewById(R.id.btnShowCompanies);
+
+        dbHelper = new DatabaseHelper(this);
+
+        btnAddCompany.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String name = etName.getText().toString();
+                String address = etAddress.getText().toString();
+                String phno = etPhno.getText().toString();
+                Company company = new Company(0, name, address, phno);
+                dbHelper.insertCompany(company);
+                Toast.makeText(MainActivity.this, "Company added successfully", Toast.LENGTH_SHORT).show();
+                clearFields();
+            }
+        });
+
+        btnShowCompanies.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List<Company> companies = dbHelper.getAllCompanies();
+                StringBuilder sb = new StringBuilder();
+                for (Company company : companies) {
+                    sb.append("ID: ").append(company.getId())
+                            .append(", Name: ").append(company.getName())
+                            .append(", Address: ").append(company.getAddress())
+                            .append(", Phone: ").append(company.getPhno())
+                            .append("\n");
+                }
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("Company Details");
+                builder.setMessage(sb.toString());
+                builder.setPositiveButton("OK", null);
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
+    }
+
+    private void clearFields() {
+        etName.setText("");
+        etAddress.setText("");
+        etPhno.setText("");
+    }
+}
+
+activity_main.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".MainActivity">
+
+    <EditText
+        android:id="@+id/etName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Company Name" />
+
+    <EditText
+        android:id="@+id/etAddress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Company Address" />
+
+    <EditText
+        android:id="@+id/etPhno"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Phone Number" />
+
+    <Button
+        android:id="@+id/btnAddCompany"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Company" />
+
+    <Button
+        android:id="@+id/btnShowCompanies"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Show All Companies" />
+
+</LinearLayout>
+
+Q.2 A) Write a C program that redirects standard output to a file output.txt. (use of dup and open system
+call).
+
+SOLUTION:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+int main(void){
+int number1, number2, sum;
+int input_fds = open("./input.txt", O_RDONLY);
+if(dup2(input_fds, STDIN_FILENO)<0){
+printf("Unable to duplicate file descriptor.");
+exit(EXIT_FAILURE);
+}
+scanf("%d %d",&number1,&number2);
+sum= number1 + number2;
+printf("%d + %d = %d\n", number1, number2, sum);
+return EXIT_SUCCESS;
+}
+
+B) Write a C program that behaves like a shell (command interpreter). It has its own prompt say
+“NewShell$”. Any normal shell command is executed from your shell by starting a child process to
+execute the system program corresponding to the command. It should additionally interpret the
+following command.
+i)
+typeline +10 <filename> - print first 10 lines of file
+ii)
+typeline -20 <filename> - print last 20 lines of file
+iii)
+typeline a <filename> - print all lines of file
+
+Soln:
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<string.h>
+char *buff,*t1,*t2,*t3,ch;
+FILE *fp;
+int pid;
+void typeline(char *t2,char *t3)
+{
+int i,n,count=0,num;
+
+if((fp=fopen(t3,"r"))==NULL)
+printf("File not found\n");
+if(strcmp(t2,"a")==0)
+{
+while((ch=fgetc(fp))!=EOF)
+printf("%c",ch);
+fclose(fp);
+return;
+}  
+n=atoi(t2);
+if(n>0)
+{
+i=0;
+while((ch=fgetc(fp))!=EOF)
+{
+if(ch=='\n')
+i++;
+if(i==n)
+break;
+printf("%c",ch);
+}
+printf("\n");
+}
+else
+{
+count=0;
+while((ch=fgetc(fp))!=EOF)
+if(ch=='\n')
+count++;
+fseek(fp,0,SEEK_SET);
+i=0;
+while((ch=fgetc(fp))!=EOF)
+{
+if(ch=='\n')
+i++;
+
+if(i==count+n-1)
+break;
+
+}
+while((ch=fgetc(fp))!=EOF)
+printf("%c",ch);
+}
+fclose(fp);
+}
+main()
+{
+while(1)
+{
+printf("myshell$");
+fflush(stdin);
+t1=(char *)malloc(80);
+t2=(char *)malloc(80);
+t3=(char *)malloc(80);
+buff=(char *)malloc(80);
+fgets(buff,80,stdin);
+sscanf(buff,"%s %s %s",t1,t2,t3);
+if(strcmp(t1,"pause")==0)
+exit(0);
+else if(strcmp(t1,"typeline")==0)
+typeline(t2,t3);
+else
+{
+pid=fork();
+if(pid<0)
+printf("Child process is not created\n");
+else if(pid==0)
+{     
+execlp("/bin",NULL);
+if(strcmp(t1,"exit")==0)
+exit(0);
+system(buff);
+}
+else
+{     
+wait(NULL);
+exit(0);
+}
+}
+}
+}
